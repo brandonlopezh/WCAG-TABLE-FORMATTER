@@ -8,34 +8,64 @@ def add_wcag_styles(html_table):
     if not table:
         return html_table  # Return original if no table found
 
-    # Add <th> tags and scope attributes
-    for row in table.find_all('tr'):
-        headers = row.find_all('th')
-        if headers:
-            for th in headers:
-                th['scope'] = 'col'  # Set scope for column headers
-        else:
-            # If no <th> found, assume first cell is a header
-            first_cell = row.find('td')
-            if first_cell:
-                new_th = soup.new_tag('th', scope='row')
-                new_th.string = first_cell.string
-                first_cell.insert_before(new_th)
-                first_cell.unwrap()  # Remove the original <td>
+    rows = table.find_all('tr')
+    
+    # Process first row - likely column headers
+    if rows:
+        first_row = rows[0]
+        cells = first_row.find_all(['td', 'th'])
+        
+        for cell in cells:
+            if cell.name == 'td':
+                # Convert td to th for header row
+                new_th = soup.new_tag('th')
+                new_th.string = cell.get_text()
+                new_th['scope'] = 'col'
+                # Copy any existing attributes
+                for attr, value in cell.attrs.items():
+                    new_th[attr] = value
+                cell.replace_with(new_th)
+            elif cell.name == 'th':
+                # Add scope if missing
+                if 'scope' not in cell.attrs:
+                    cell['scope'] = 'col'
 
-    return str(soup)  # Return the modified HTML as a string
+    # Process remaining rows - first cell as row header
+    for row in rows[1:]:
+        cells = row.find_all(['td', 'th'])
+        if cells:
+            first_cell = cells[0]
+            if first_cell.name == 'td':
+                # Convert first cell to th with row scope
+                new_th = soup.new_tag('th')
+                new_th.string = first_cell.get_text()
+                new_th['scope'] = 'row'
+                # Copy any existing attributes
+                for attr, value in first_cell.attrs.items():
+                    new_th[attr] = value
+                first_cell.replace_with(new_th)
+
+    # Return only the table part, not full HTML document
+    return str(table)
 
 # Example usage
 if __name__ == "__main__":
     sample_html = """
     <table>
         <tr>
-            <td>Header 1</td>
-            <td>Header 2</td>
+            <td>Name</td>
+            <td>Age</td>
+            <td>City</td>
         </tr>
         <tr>
-            <td>Row 1, Col 1</td>
-            <td>Row 1, Col 2</td>
+            <td>John</td>
+            <td>25</td>
+            <td>NYC</td>
+        </tr>
+        <tr>
+            <td>Jane</td>
+            <td>30</td>
+            <td>LA</td>
         </tr>
     </table>
     """

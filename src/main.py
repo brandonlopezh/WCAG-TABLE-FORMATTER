@@ -1,25 +1,39 @@
-def main():
-    import sys
-    from parser import parse_html_table
-    from formatter import format_table
+import sys
+from formatter import add_wcag_styles  # Import your function
 
-    if len(sys.argv) != 2:
-        print("Usage: python main.py <path_to_html_file>")
-        sys.exit(1)
-
-    input_file_path = sys.argv[1]
-
+def get_user_input():
+    print("Paste your HTML table below (press Ctrl+D on Mac/Linux or Ctrl+Z+Enter on Windows when done):")
+    print("-" * 50)
+    lines = []
     try:
-        with open(input_file_path, 'r') as file:
-            html_content = file.read()
-    except FileNotFoundError:
-        print(f"Error: File '{input_file_path}' not found.")
-        sys.exit(1)
+        while True:
+            line = input()
+            lines.append(line)
+    except EOFError:
+        pass
+    
+    return '\n'.join(lines)
 
-    parsed_table = parse_html_table(html_content)
-    formatted_table = format_table(parsed_table)
-
-    print(formatted_table)
+def main():
+    try:
+        html_content = get_user_input()
+        
+        if not html_content.strip():
+            print("No input provided. Exiting.")
+            return
+        
+        print("\nProcessing...")
+        formatted_html = add_wcag_styles(html_content)  # Use your function
+        
+        print("\n" + "="*50)
+        print("WCAG-FORMATTED TABLE:")
+        print("="*50)
+        print(formatted_html)
+        
+    except KeyboardInterrupt:
+        print("\nOperation cancelled.")
+    except Exception as e:
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     main()
