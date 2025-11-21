@@ -1,9 +1,7 @@
 
-# WCAG-TABLE-FORMATTER
+# WCAG Table Formatter
 Making table html formatting easier
 =======
-# WCAG Table Formatter
-
 This project provides a Python tool for cleaning up HTML table code and applying WCAG (Web Content Accessibility Guidelines) styles to enhance accessibility. The tool identifies table elements and formats them by adding appropriate `<th>` tags and `scope` attributes.
 
 ## Features
