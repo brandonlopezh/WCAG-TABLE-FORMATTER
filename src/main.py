@@ -23,12 +23,14 @@ def main():
             return
         
         print("\nProcessing...")
-        formatted_html = add_wcag_styles(html_content)  # Use your function
+        formatted_html = add_wcag_styles(html_content)
         
-        print("\n" + "="*50)
-        print("WCAG-FORMATTED TABLE:")
-        print("="*50)
-        print(formatted_html)
+        # Write to file instead of printing
+        output_file = "wcag_formatted_table.html"
+        with open(output_file, 'w') as f:
+            f.write(formatted_html)
+        
+        print(f"\nSuccess! WCAG-formatted table saved to: {output_file}")
         
     except KeyboardInterrupt:
         print("\nOperation cancelled.")
